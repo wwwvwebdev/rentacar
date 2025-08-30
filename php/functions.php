@@ -247,4 +247,59 @@ function get_user_bookings($conn, $user_id) {
 
     return $bookings;
 }
+
+/**
+ * Updates a user's profile information (full name and email).
+ *
+ * @param mysqli $conn The database connection object.
+ * @param int $user_id The ID of the user to update.
+ * @param string $full_name The new full name.
+ * @param string $email The new email address.
+ * @return bool True on success, false on failure.
+ */
+function update_user_profile($conn, $user_id, $full_name, $email) {
+    $sql = "UPDATE users SET full_name = ?, email = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    if ($stmt === false) return false;
+    $stmt->bind_param("ssi", $full_name, $email, $user_id);
+    return $stmt->execute();
+}
+
+/**
+ * Updates a user's password after verifying the current one.
+ *
+ * @param mysqli $conn The database connection object.
+ * @param int $user_id The ID of the user to update.
+ * @param string $current_password The user's current password.
+ * @param string $new_password The new password.
+ * @return bool True on success, false on failure (or if current password is wrong).
+ */
+function update_user_password($conn, $user_id, $current_password, $new_password) {
+    // First, get the current password hash from the DB
+    $sql_select = "SELECT password FROM users WHERE id = ?";
+    $stmt_select = $conn->prepare($sql_select);
+    if ($stmt_select === false) return false;
+    $stmt_select->bind_param("i", $user_id);
+    $stmt_select->execute();
+    $result = $stmt_select->get_result();
+
+    if ($result->num_rows !== 1) {
+        return false; // User not found
+    }
+    $user = $result->fetch_assoc();
+
+    // Verify the current password
+    if (password_verify($current_password, $user['password'])) {
+        // If correct, update to the new password
+        $new_hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+        $sql_update = "UPDATE users SET password = ? WHERE id = ?";
+        $stmt_update = $conn->prepare($sql_update);
+        if ($stmt_update === false) return false;
+        $stmt_update->bind_param("si", $new_hashed_password, $user_id);
+        return $stmt_update->execute();
+    } else {
+        // Current password was incorrect
+        return false;
+    }
+}
 ?>

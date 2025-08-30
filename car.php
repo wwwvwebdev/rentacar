@@ -125,6 +125,7 @@ if ($car) {
                 <li><a href="#">Cars</a></li>
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li><a href="my_bookings.php">My Bookings</a></li>
+                    <li><a href="profile.php">Profile</a></li>
                 <?php endif; ?>
                 <li><a href="#">About</a></li>
                 <li><a href="#">Contact</a></li>
