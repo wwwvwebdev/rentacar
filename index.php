@@ -4,7 +4,9 @@ session_start();
 require_once 'php/functions.php';
 
 // Fetch all available cars from the database
-$cars = get_all_cars($conn);
+$cities = get_all_cities($conn);
+$selected_city = $_GET['city'] ?? 'all';
+$cars = get_all_cars($conn, $selected_city);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -61,6 +63,26 @@ $cars = get_all_cars($conn);
             <div class="divider"></div>
             <div class="section">
                 <h3 class="center-align">Our Fleet</h3>
+                <div class="row">
+                    <div class="col s12 m6 offset-m3">
+                        <form action="index.php" method="GET">
+                            <div class="input-field">
+                                <select name="city" id="city_filter">
+                                    <option value="all" <?php echo ($selected_city === 'all' ? 'selected' : ''); ?>>All Cities</option>
+                                    <?php foreach ($cities as $city): ?>
+                                        <option value="<?php echo htmlspecialchars($city); ?>" <?php echo ($selected_city === $city ? 'selected' : ''); ?>>
+                                            <?php echo htmlspecialchars($city); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <label>Filter by City</label>
+                            </div>
+                            <div class="center-align">
+                                <button type="submit" class="btn waves-effect waves-light">Filter</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 <div class="row">
                     <?php if (!empty($cars)): ?>
                         <?php foreach ($cars as $car): ?>

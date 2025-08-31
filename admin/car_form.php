@@ -10,7 +10,7 @@ require_once '../php/functions.php';
 
 // Initialize variables
 $car = [
-    'id' => '', 'make' => '', 'model' => '', 'year' => '',
+    'id' => '', 'make' => '', 'model' => '', 'city' => '', 'year' => '',
     'price_per_day' => '', 'image_url' => '', 'is_available' => 1
 ];
 $page_title = "Add New Car";
@@ -33,6 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $car_data = [
         'make' => trim($_POST['make']),
         'model' => trim($_POST['model']),
+        'city' => trim($_POST['city']),
         'year' => (int)$_POST['year'],
         'price_per_day' => (float)$_POST['price_per_day'],
         'image_url' => trim($_POST['image_url']),
@@ -40,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ];
 
     // Basic validation
-    if (empty($car_data['make']) || empty($car_data['model']) || empty($car_data['year']) || empty($car_data['price_per_day'])) {
+    if (empty($car_data['make']) || empty($car_data['model']) || empty($car_data['city']) || empty($car_data['year']) || empty($car_data['price_per_day'])) {
         $error_message = "Please fill in all required fields.";
     } else {
         if (isset($_GET['id'])) {
@@ -111,6 +112,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="input-field col s12 m6">
                                 <input id="model" type="text" name="model" value="<?php echo htmlspecialchars($car['model']); ?>" class="validate" required>
                                 <label for="model">Model</label>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input id="city" type="text" name="city" value="<?php echo htmlspecialchars($car['city']); ?>" class="validate" required>
+                                <label for="city">City</label>
                             </div>
                             <div class="input-field col s12 m6">
                                 <input id="year" type="number" name="year" value="<?php echo htmlspecialchars($car['year']); ?>" class="validate" required>

@@ -55,6 +55,7 @@ $cars = get_all_cars_admin($conn);
                             <th>ID</th>
                             <th>Make</th>
                             <th>Model</th>
+                            <th>City</th>
                             <th>Year</th>
                             <th>Price/Day</th>
                             <th>Status</th>
@@ -68,6 +69,7 @@ $cars = get_all_cars_admin($conn);
                                     <td><?php echo htmlspecialchars($car['id']); ?></td>
                                     <td><?php echo htmlspecialchars($car['make']); ?></td>
                                     <td><?php echo htmlspecialchars($car['model']); ?></td>
+                                    <td><?php echo htmlspecialchars($car['city']); ?></td>
                                     <td><?php echo htmlspecialchars($car['year']); ?></td>
                                     <td>$<?php echo htmlspecialchars(number_format($car['price_per_day'], 2)); ?></td>
                                     <td>
@@ -85,7 +87,7 @@ $cars = get_all_cars_admin($conn);
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" class="center-align">No cars found. Click the '+' button to add one.</td>
+                                <td colspan="8" class="center-align">No cars found. Click the '+' button to add one.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

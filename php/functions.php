@@ -8,17 +8,48 @@ require_once 'database.php';
  * @param mysqli $conn The database connection object.
  * @return array An array of cars, or an empty array if no cars are found.
  */
-function get_all_cars($conn) {
+function get_all_cars($conn, $city = null) {
     $cars = [];
-    $sql = "SELECT * FROM cars WHERE is_available = TRUE ORDER BY make, model";
-    $result = $conn->query($sql);
+    $sql = "SELECT * FROM cars WHERE is_available = TRUE";
 
-    if ($result && $result->num_rows > 0) {
-        // Fetch all rows into an associative array
-        $cars = $result->fetch_all(MYSQLI_ASSOC);
+    if ($city && $city !== 'all') {
+        $sql .= " AND city = ?";
+    }
+
+    $sql .= " ORDER BY make, model";
+
+    $stmt = $conn->prepare($sql);
+
+    if ($city && $city !== 'all') {
+        $stmt->bind_param("s", $city);
+    }
+
+    if ($stmt->execute()) {
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $cars = $result->fetch_all(MYSQLI_ASSOC);
+        }
     }
 
     return $cars;
+}
+
+/**
+ * Fetches a distinct list of cities from the cars table.
+ *
+ * @param mysqli $conn The database connection object.
+ * @return array An array of city names.
+ */
+function get_all_cities($conn) {
+    $cities = [];
+    $sql = "SELECT DISTINCT city FROM cars WHERE is_available = TRUE AND city IS NOT NULL AND city != '' ORDER BY city ASC";
+    $result = $conn->query($sql);
+    if ($result && $result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            $cities[] = $row['city'];
+        }
+    }
+    return $cities;
 }
 
 /**
@@ -47,11 +78,11 @@ function get_all_cars_admin($conn) {
  * @return bool True on success, false on failure.
  */
 function create_car($conn, $car_data) {
-    $sql = "INSERT INTO cars (make, model, year, price_per_day, image_url, is_available) VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO cars (make, model, city, year, price_per_day, image_url, is_available) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     if ($stmt === false) return false;
-    $stmt->bind_param("ssidsi",
-        $car_data['make'], $car_data['model'], $car_data['year'],
+    $stmt->bind_param("sssidsi",
+        $car_data['make'], $car_data['model'], $car_data['city'], $car_data['year'],
         $car_data['price_per_day'], $car_data['image_url'], $car_data['is_available']
     );
     return $stmt->execute();
@@ -65,11 +96,11 @@ function create_car($conn, $car_data) {
  * @return bool True on success, false on failure.
  */
 function update_car($conn, $car_data) {
-    $sql = "UPDATE cars SET make = ?, model = ?, year = ?, price_per_day = ?, image_url = ?, is_available = ? WHERE id = ?";
+    $sql = "UPDATE cars SET make = ?, model = ?, city = ?, year = ?, price_per_day = ?, image_url = ?, is_available = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
     if ($stmt === false) return false;
-    $stmt->bind_param("ssidsii",
-        $car_data['make'], $car_data['model'], $car_data['year'],
+    $stmt->bind_param("sssidsii",
+        $car_data['make'], $car_data['model'], $car_data['city'], $car_data['year'],
         $car_data['price_per_day'], $car_data['image_url'], $car_data['is_available'],
         $car_data['id']
     );
