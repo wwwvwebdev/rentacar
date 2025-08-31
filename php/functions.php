@@ -43,7 +43,7 @@ function get_all_cars($conn, $city = null) {
 function get_all_bookings_admin($conn) {
     $bookings = [];
     $sql = "SELECT
-                r.id, r.start_date, r.end_date, r.total_price, r.status,
+                r.id, r.start_date, r.end_date, r.total_price, r.status, r.with_driver,
                 c.make, c.model,
                 u.full_name, u.email
             FROM rentals AS r
@@ -118,12 +118,13 @@ function get_all_cars_admin($conn) {
  * @return bool True on success, false on failure.
  */
 function create_car($conn, $car_data) {
-    $sql = "INSERT INTO cars (make, model, city, year, price_per_day, image_url, is_available) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO cars (make, model, city, year, price_per_day, driver_rate_per_day, image_url, is_available, with_driver_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     if ($stmt === false) return false;
-    $stmt->bind_param("sssidsi",
+    $stmt->bind_param("sssiddsii",
         $car_data['make'], $car_data['model'], $car_data['city'], $car_data['year'],
-        $car_data['price_per_day'], $car_data['image_url'], $car_data['is_available']
+        $car_data['price_per_day'], $car_data['driver_rate_per_day'], $car_data['image_url'],
+        $car_data['is_available'], $car_data['with_driver_available']
     );
     return $stmt->execute();
 }
@@ -136,12 +137,13 @@ function create_car($conn, $car_data) {
  * @return bool True on success, false on failure.
  */
 function update_car($conn, $car_data) {
-    $sql = "UPDATE cars SET make = ?, model = ?, city = ?, year = ?, price_per_day = ?, image_url = ?, is_available = ? WHERE id = ?";
+    $sql = "UPDATE cars SET make = ?, model = ?, city = ?, year = ?, price_per_day = ?, driver_rate_per_day = ?, image_url = ?, is_available = ?, with_driver_available = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
     if ($stmt === false) return false;
-    $stmt->bind_param("sssidsii",
+    $stmt->bind_param("sssiddsiii",
         $car_data['make'], $car_data['model'], $car_data['city'], $car_data['year'],
-        $car_data['price_per_day'], $car_data['image_url'], $car_data['is_available'],
+        $car_data['price_per_day'], $car_data['driver_rate_per_day'], $car_data['image_url'],
+        $car_data['is_available'], $car_data['with_driver_available'],
         $car_data['id']
     );
     return $stmt->execute();
@@ -268,15 +270,15 @@ function get_car_by_id($conn, $car_id) {
  * @param float $total_price The total price of the rental.
  * @return bool True on success, false on failure.
  */
-function create_rental($conn, $user_id, $car_id, $start_date, $end_date, $total_price) {
-    $sql = "INSERT INTO rentals (user_id, car_id, start_date, end_date, total_price) VALUES (?, ?, ?, ?, ?)";
+function create_rental($conn, $user_id, $car_id, $start_date, $end_date, $total_price, $with_driver) {
+    $sql = "INSERT INTO rentals (user_id, car_id, start_date, end_date, total_price, with_driver) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
         return false;
     }
 
-    $stmt->bind_param("iissd", $user_id, $car_id, $start_date, $end_date, $total_price);
+    $stmt->bind_param("iissdi", $user_id, $car_id, $start_date, $end_date, $total_price, $with_driver);
 
     return $stmt->execute();
 }
@@ -295,6 +297,7 @@ function get_user_bookings($conn, $user_id) {
                 r.end_date,
                 r.total_price,
                 r.status,
+                r.with_driver,
                 c.make,
                 c.model,
                 c.image_url

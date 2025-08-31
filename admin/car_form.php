@@ -11,7 +11,8 @@ require_once '../php/functions.php';
 // Initialize variables
 $car = [
     'id' => '', 'make' => '', 'model' => '', 'city' => '', 'year' => '',
-    'price_per_day' => '', 'image_url' => '', 'is_available' => 1
+    'price_per_day' => '', 'driver_rate_per_day' => '', 'image_url' => '',
+    'is_available' => 1, 'with_driver_available' => 0
 ];
 $page_title = "Add New Car";
 $form_action = "car_form.php";
@@ -36,8 +37,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'city' => trim($_POST['city']),
         'year' => (int)$_POST['year'],
         'price_per_day' => (float)$_POST['price_per_day'],
+        'driver_rate_per_day' => (float)$_POST['driver_rate_per_day'],
         'image_url' => trim($_POST['image_url']),
-        'is_available' => isset($_POST['is_available']) ? 1 : 0
+        'is_available' => isset($_POST['is_available']) ? 1 : 0,
+        'with_driver_available' => isset($_POST['with_driver_available']) ? 1 : 0
     ];
 
     // Basic validation
@@ -125,19 +128,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </div>
                             <div class="input-field col s12 m6">
                                 <input id="price_per_day" type="number" name="price_per_day" step="0.01" value="<?php echo htmlspecialchars($car['price_per_day']); ?>" class="validate" required>
-                                <label for="price_per_day">Price per Day</label>
+                                <label for="price_per_day">Price per Day (Car Only)</label>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input id="driver_rate_per_day" type="number" name="driver_rate_per_day" step="0.01" value="<?php echo htmlspecialchars($car['driver_rate_per_day']); ?>" class="validate">
+                                <label for="driver_rate_per_day">Additional Driver Rate per Day</label>
                             </div>
                             <div class="input-field col s12">
                                 <input id="image_url" type="text" name="image_url" value="<?php echo htmlspecialchars($car['image_url']); ?>" class="validate">
                                 <label for="image_url">Image URL</label>
                             </div>
-                            <div class="col s12">
+                            <div class="col s12 m6">
                                 <div class="switch">
                                     <label>
-                                        Unavailable
+                                        Car Unavailable
                                         <input type="checkbox" name="is_available" value="1" <?php echo ($car['is_available'] ? 'checked' : ''); ?>>
                                         <span class="lever"></span>
-                                        Available
+                                        Car Available
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col s12 m6">
+                                <div class="switch">
+                                    <label>
+                                        Driver Unavailable
+                                        <input type="checkbox" name="with_driver_available" value="1" <?php echo ($car['with_driver_available'] ? 'checked' : ''); ?>>
+                                        <span class="lever"></span>
+                                        Driver Available
                                     </label>
                                 </div>
                             </div>

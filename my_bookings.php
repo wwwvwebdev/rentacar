@@ -80,7 +80,11 @@ if (isset($_SESSION['booking_success'])) {
                                             <span class="card-title"><?php echo htmlspecialchars($booking['make'] . ' ' . $booking['model']); ?></span>
                                             <p><strong>From:</strong> <?php echo htmlspecialchars($booking['start_date']); ?></p>
                                             <p><strong>To:</strong> <?php echo htmlspecialchars($booking['end_date']); ?></p>
-                                            <p><strong>Total:</strong> $<?php echo htmlspecialchars(number_format($booking['total_price'], 2)); ?></p>
+                                            <p><strong>Total:</strong> $<?php echo htmlspecialchars(number_format($booking['total_price'], 2)); ?>
+                                                <?php if ($booking['with_driver']): ?>
+                                                    <span class="grey-text">(with Driver)</span>
+                                                <?php endif; ?>
+                                            </p>
                                             <div class="chip <?php
                                                 switch ($booking['status']) {
                                                     case 'confirmed': echo 'green white-text'; break;

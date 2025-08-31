@@ -78,7 +78,12 @@ $bookings = get_all_bookings_admin($conn);
                                 <tr>
                                     <td><?php echo htmlspecialchars($booking['id']); ?></td>
                                     <td><?php echo htmlspecialchars($booking['full_name']); ?><br><small><?php echo htmlspecialchars($booking['email']); ?></small></td>
-                                    <td><?php echo htmlspecialchars($booking['make'] . ' ' . $booking['model']); ?></td>
+                                    <td>
+                                        <?php echo htmlspecialchars($booking['make'] . ' ' . $booking['model']); ?>
+                                        <?php if ($booking['with_driver']): ?>
+                                            <br><small>(With Driver)</small>
+                                        <?php endif; ?>
+                                    </td>
                                     <td><?php echo htmlspecialchars($booking['start_date']); ?> to <?php echo htmlspecialchars($booking['end_date']); ?></td>
                                     <td>$<?php echo htmlspecialchars(number_format($booking['total_price'], 2)); ?></td>
                                     <td><?php echo htmlspecialchars(ucfirst($booking['status'])); ?></td>

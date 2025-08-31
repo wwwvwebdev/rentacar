@@ -21,6 +21,7 @@ if ($car) {
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_id'])) {
         $start_date_str = $_POST['start_date'];
         $end_date_str = $_POST['end_date'];
+        $with_driver = isset($_POST['with_driver']) ? 1 : 0;
 
         // Basic validation
         if (empty($start_date_str) || empty($end_date_str)) {
@@ -29,6 +30,7 @@ if ($car) {
             $start_date = new DateTime($start_date_str);
             $end_date = new DateTime($end_date_str);
             $today = new DateTime();
+            $today->setTime(0, 0, 0);
 
             if ($start_date < $today) {
                 $booking_error = "Start date cannot be in the past.";
@@ -39,9 +41,12 @@ if ($car) {
                 $interval = $start_date->diff($end_date);
                 $days = $interval->days;
                 $total_price = $days * $car['price_per_day'];
+                if ($with_driver && $car['with_driver_available']) {
+                    $total_price += $days * $car['driver_rate_per_day'];
+                }
 
                 // Create the rental
-                if (create_rental($conn, $_SESSION['user_id'], $car_id, $start_date_str, $end_date_str, $total_price)) {
+                if (create_rental($conn, $_SESSION['user_id'], $car_id, $start_date_str, $end_date_str, $total_price, $with_driver)) {
                     $_SESSION['booking_success'] = "Your booking was successful!";
                     header("Location: my_bookings.php");
                     exit;
@@ -109,11 +114,13 @@ if ($car) {
                         <div class="col s12 m6">
                             <h3><?php echo htmlspecialchars($car['make'] . ' ' . $car['model']); ?></h3>
                             <h5>Year: <?php echo htmlspecialchars($car['year']); ?></h5>
-                            <h4 class="teal-text text-darken-2">$<?php echo htmlspecialchars($car['price_per_day']); ?> / day</h4>
+                            <h4 class="teal-text text-darken-2" id="price-display">$<?php echo htmlspecialchars($car['price_per_day']); ?> / day</h4>
                             <div class="card-panel">
                                 <?php if (isset($_SESSION['user_id'])): ?>
                                     <h5>Book this Car</h5>
-                                    <form action="car.php?id=<?php echo $car_id; ?>" method="POST" id="bookingForm">
+                                    <form action="car.php?id=<?php echo $car_id; ?>" method="POST" id="bookingForm"
+                                          data-car-price="<?php echo $car['price_per_day']; ?>"
+                                          data-driver-price="<?php echo $car['driver_rate_per_day']; ?>">
                                         <div class="input-field">
                                             <input type="text" class="datepicker" id="start_date" name="start_date" required>
                                             <label for="start_date">Start Date</label>
@@ -122,6 +129,15 @@ if ($car) {
                                             <input type="text" class="datepicker" id="end_date" name="end_date" required>
                                             <label for="end_date">End Date</label>
                                         </div>
+                                        <?php if ($car['with_driver_available']): ?>
+                                        <p>
+                                            <label>
+                                                <input type="checkbox" name="with_driver" id="with_driver" value="1" />
+                                                <span>Include Driver (+ $<?php echo htmlspecialchars($car['driver_rate_per_day']); ?>/day)</span>
+                                            </label>
+                                        </p>
+                                        <?php endif; ?>
+                                        <h5 class="right-align" id="total-price-display">Total: $0.00</h5>
                                         <button type="submit" class="btn waves-effect waves-light green right">Confirm Booking</button>
                                     </form>
                                 <?php else: ?>
