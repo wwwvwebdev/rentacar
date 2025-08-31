@@ -47,105 +47,87 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Rent-a-Car</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        .auth-form {
-            max-width: 400px;
-            margin: 4rem auto;
-            padding: 2rem;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .auth-form h2 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .form-group button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        .form-group button:hover {
-            background-color: #0056b3;
-        }
-        .auth-form .login-link {
-            text-align: center;
-            margin-top: 1rem;
-        }
-        .auth-form .login-link a {
-            color: #007bff;
-            text-decoration: none;
-        }
-    </style>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/custom.css">
 </head>
 <body>
     <header>
         <nav>
-            <a href="index.php" class="logo">Rent-a-Car</a>
-            <ul>
-                <li><a href="index.php">Home</a></li>
-                <li><a href="#">Cars</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-                <li><a href="login.php" class="btn-login">Login</a></li>
-            </ul>
+            <div class="nav-wrapper">
+                <a href="index.php" class="brand-logo">Rent-a-Car</a>
+                <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="#">Cars</a></li>
+                    <li><a href="login.php" class="waves-effect waves-light btn">Login</a></li>
+                </ul>
+            </div>
         </nav>
+        <ul class="sidenav" id="mobile-nav">
+            <li><a href="index.php">Home</a></li>
+            <li><a href="#">Cars</a></li>
+            <li><a href="login.php">Login</a></li>
+        </ul>
     </header>
 
     <main>
-        <div class="auth-form">
-            <h2>Create an Account</h2>
-            <form action="register.php" method="POST" id="registrationForm">
-                <?php if (!empty($registration_error)): ?>
-                    <p style="color: red; text-align: center;"><?php echo $registration_error; ?></p>
-                <?php endif; ?>
-                <div class="form-group">
-                    <label for="full_name">Full Name</label>
-                    <input type="text" id="full_name" name="full_name" required>
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m8 offset-m2 l6 offset-l3">
+                    <div class="card-panel auth-card">
+                        <h4 class="center-align">Create an Account</h4>
+                        <form action="register.php" method="POST" id="registrationForm">
+                            <div class="input-field">
+                                <i class="material-icons prefix">person</i>
+                                <input id="full_name" type="text" name="full_name" class="validate" required>
+                                <label for="full_name">Full Name</label>
+                            </div>
+                            <div class="input-field">
+                                <i class="material-icons prefix">account_circle</i>
+                                <input id="username" type="text" name="username" class="validate" required data-length="20">
+                                <label for="username">Username</label>
+                            </div>
+                            <div class="input-field">
+                                <i class="material-icons prefix">email</i>
+                                <input id="email" type="email" name="email" class="validate" required>
+                                <label for="email">Email</label>
+                            </div>
+                            <div class="input-field">
+                                <i class="material-icons prefix">lock</i>
+                                <input id="password" type="password" name="password" class="validate" required>
+                                <label for="password">Password</label>
+                            </div>
+                            <div class="center-align">
+                                <button type="submit" class="btn waves-effect waves-light">Register</button>
+                            </div>
+                        </form>
+                        <p class="center-align">Already have an account? <a href="login.php">Login here</a></p>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <div class="form-group">
-                    <button type="submit">Register</button>
-                </div>
-            </form>
-            <div class="login-link">
-                <p>Already have an account? <a href="login.php">Login here</a></p>
             </div>
         </div>
     </main>
 
-    <footer>
-        <p>&copy; 2025 Rent-a-Car. All Rights Reserved.</p>
+    <footer class="page-footer">
+        <div class="footer-copyright">
+            <div class="container">
+                &copy; 2025 Rent-a-Car. All Rights Reserved.
+            </div>
+        </div>
     </footer>
+
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="js/custom.js"></script>
+    <?php
+    if (!empty($registration_error)) {
+        echo "<script>M.toast({html: '{$registration_error}', classes: 'red'});</script>";
+    }
+    ?>
 </body>
 </html>

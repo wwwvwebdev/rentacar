@@ -68,99 +68,116 @@ $user = $result->fetch_assoc();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - Rent-a-Car</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        .profile-container { max-width: 800px; margin: 2rem auto; padding: 2rem; }
-        .profile-form { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 2rem; }
-        .profile-form h2 { margin-top: 0; margin-bottom: 1.5rem; }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        .form-group button { padding: 12px 20px; background-color: #007bff; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
-        .message { padding: 1rem; margin-bottom: 1rem; border-radius: 5px; }
-        .message.success { background-color: #d4edda; color: #155724; }
-        .message.error { background-color: #f8d7da; color: #721c24; }
-    </style>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/custom.css">
 </head>
 <body>
     <header>
         <nav>
-            <a href="index.php" class="logo">Rent-a-Car</a>
-            <ul>
-                <li><a href="index.php">Home</a></li>
-                <li><a href="#">Cars</a></li>
+            <div class="nav-wrapper">
+                <a href="index.php" class="brand-logo">Rent-a-Car</a>
+                <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="#">Cars</a></li>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <li><a href="my_bookings.php">My Bookings</a></li>
+                        <li class="active"><a href="profile.php">Profile</a></li>
+                        <li><a href="logout.php" class="waves-effect waves-light btn">Logout</a></li>
+                    <?php else: ?>
+                        <li><a href="login.php" class="waves-effect waves-light btn">Login</a></li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+        </nav>
+        <ul class="sidenav" id="mobile-nav">
+            <li><a href="index.php">Home</a></li>
+            <li><a href="#">Cars</a></li>
+            <?php if (isset($_SESSION['user_id'])): ?>
                 <li><a href="my_bookings.php">My Bookings</a></li>
                 <li><a href="profile.php">Profile</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
-                    <li><a href="logout.php">Logout</a></li>
-                <?php else: ?>
-                    <li><a href="login.php" class="btn-login">Login</a></li>
-                <?php endif; ?>
-            </ul>
-        </nav>
+                <li><a href="logout.php">Logout</a></li>
+            <?php else: ?>
+                <li><a href="login.php">Login</a></li>
+            <?php endif; ?>
+        </ul>
     </header>
 
     <main>
-        <div class="profile-container">
-            <h1>My Profile</h1>
-
-            <!-- Edit Profile Form -->
-            <div class="profile-form">
-                <h2>Edit Your Information</h2>
-                <?php if (!empty($profile_message)): ?>
-                    <div class="message <?php echo strpos($profile_message, 'success') !== false ? 'success' : 'error'; ?>">
-                        <?php echo $profile_message; ?>
+        <div class="container">
+            <div class="section">
+                <h3 class="center-align">My Profile</h3>
+                <div class="row">
+                    <div class="col s12 l6">
+                        <div class="card-panel">
+                            <h5>Edit Your Information</h5>
+                            <form action="profile.php" method="POST">
+                                <div class="input-field">
+                                    <input id="username" type="text" value="<?php echo htmlspecialchars($user['username']); ?>" disabled>
+                                    <label for="username">Username</label>
+                                </div>
+                                <div class="input-field">
+                                    <input id="full_name" type="text" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>" class="validate" required>
+                                    <label for="full_name">Full Name</label>
+                                </div>
+                                <div class="input-field">
+                                    <input id="email" type="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" class="validate" required>
+                                    <label for="email">Email</label>
+                                </div>
+                                <button type="submit" name="update_profile" class="btn waves-effect waves-light">Update Profile</button>
+                            </form>
+                        </div>
                     </div>
-                <?php endif; ?>
-                <form action="profile.php" method="POST">
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" value="<?php echo htmlspecialchars($user['username']); ?>" disabled>
+                    <div class="col s12 l6">
+                        <div class="card-panel">
+                            <h5>Change Your Password</h5>
+                            <form action="profile.php" method="POST">
+                                <div class="input-field">
+                                    <input id="current_password" type="password" name="current_password" class="validate" required>
+                                    <label for="current_password">Current Password</label>
+                                </div>
+                                <div class="input-field">
+                                    <input id="new_password" type="password" name="new_password" class="validate" required>
+                                    <label for="new_password">New Password</label>
+                                </div>
+                                <div class="input-field">
+                                    <input id="confirm_password" type="password" name="confirm_password" class="validate" required>
+                                    <label for="confirm_password">Confirm New Password</label>
+                                </div>
+                                <button type="submit" name="change_password" class="btn waves-effect waves-light">Change Password</button>
+                            </form>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="full_name">Full Name</label>
-                        <input type="text" id="full_name" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" name="update_profile">Update Profile</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Change Password Form -->
-            <div class="profile-form">
-                <h2>Change Your Password</h2>
-                <?php if (!empty($password_message)): ?>
-                     <div class="message <?php echo strpos($password_message, 'success') !== false ? 'success' : 'error'; ?>">
-                        <?php echo $password_message; ?>
-                    </div>
-                <?php endif; ?>
-                <form action="profile.php" method="POST">
-                    <div class="form-group">
-                        <label for="current_password">Current Password</label>
-                        <input type="password" id="current_password" name="current_password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="new_password">New Password</label>
-                        <input type="password" id="new_password" name="new_password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="confirm_password">Confirm New Password</label>
-                        <input type="password" id="confirm_password" name="confirm_password" required>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" name="change_password">Change Password</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </main>
+
+    <footer class="page-footer">
+        <div class="footer-copyright">
+            <div class="container">
+                &copy; 2025 Rent-a-Car. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="js/custom.js"></script>
+    <?php
+    if (!empty($profile_message)) {
+        $msg_class = strpos($profile_message, 'success') !== false ? 'green' : 'red';
+        echo "<script>M.toast({html: '{$profile_message}', classes: '{$msg_class}'});</script>";
+    }
+    if (!empty($password_message)) {
+        $msg_class = strpos($password_message, 'success') !== false ? 'green' : 'red';
+        echo "<script>M.toast({html: '{$password_message}', classes: '{$msg_class}'});</script>";
+    }
+    ?>
 </body>
 </html>

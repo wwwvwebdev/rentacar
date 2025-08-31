@@ -12,63 +12,101 @@ $cars = get_all_cars($conn);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rent-a-Car</title>
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/custom.css">
 </head>
 <body>
     <header>
         <nav>
-            <a href="index.php" class="logo">Rent-a-Car</a>
-            <ul>
-                <li><a href="index.php">Home</a></li>
-                <li><a href="#">Cars</a></li>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><a href="my_bookings.php">My Bookings</a></li>
-                    <li><a href="profile.php">Profile</a></li>
-                <?php endif; ?>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
-                    <li><a href="logout.php">Logout</a></li>
-                <?php else: ?>
-                    <li><a href="login.php" class="btn-login">Login</a></li>
-                <?php endif; ?>
-            </ul>
+            <div class="nav-wrapper">
+                <a href="index.php" class="brand-logo">Rent-a-Car</a>
+                <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="#">Cars</a></li>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <li><a href="my_bookings.php">My Bookings</a></li>
+                        <li><a href="profile.php">Profile</a></li>
+                        <li><a href="logout.php" class="waves-effect waves-light btn">Logout</a></li>
+                    <?php else: ?>
+                        <li><a href="login.php" class="waves-effect waves-light btn">Login</a></li>
+                    <?php endif; ?>
+                </ul>
+            </div>
         </nav>
+
+        <ul class="sidenav" id="mobile-nav">
+            <li><a href="index.php">Home</a></li>
+            <li><a href="#">Cars</a></li>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <li><a href="my_bookings.php">My Bookings</a></li>
+                <li><a href="profile.php">Profile</a></li>
+                <li><a href="logout.php">Logout</a></li>
+            <?php else: ?>
+                <li><a href="login.php">Login</a></li>
+            <?php endif; ?>
+        </ul>
     </header>
 
     <main>
-        <section class="hero">
-            <h2>Find Your Perfect Rental Car</h2>
-            <p>High-quality vehicles at the best prices.</p>
-        </section>
-
-        <section class="car-listings">
-            <h3>Our Fleet</h3>
-            <div class="car-grid">
-                <?php if (!empty($cars)): ?>
-                    <?php foreach ($cars as $car): ?>
-                        <a href="car.php?id=<?php echo $car['id']; ?>" class="car-card-link">
-                            <div class="car-card">
-                                <img src="<?php echo htmlspecialchars($car['image_url'] ?: 'images/placeholder.png'); ?>" alt="<?php echo htmlspecialchars($car['make'] . ' ' . $car['model']); ?>">
-                                <h4><?php echo htmlspecialchars($car['make'] . ' ' . $car['model']); ?></h4>
-                                <p>Year: <?php echo htmlspecialchars($car['year']); ?></p>
-                                <span class="price">$<?php echo htmlspecialchars($car['price_per_day']); ?>/day</span>
-                                <span class="view-details-btn">View Details</span>
-                            </div>
-                        </a>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <p>No cars available at the moment. Please check back later.</p>
-                <?php endif; ?>
+        <div class="container">
+            <div class="section">
+                <h2 class="center-align">Find Your Perfect Rental Car</h2>
+                <p class="center-align flow-text">High-quality vehicles at the best prices.</p>
             </div>
-        </section>
+            <div class="divider"></div>
+            <div class="section">
+                <h3 class="center-align">Our Fleet</h3>
+                <div class="row">
+                    <?php if (!empty($cars)): ?>
+                        <?php foreach ($cars as $car): ?>
+                            <div class="col s12 m6 l4">
+                                <div class="card hoverable">
+                                    <div class="card-image">
+                                        <img src="<?php echo htmlspecialchars($car['image_url'] ?: 'https://via.placeholder.com/400x300.png?text=No+Image'); ?>" alt="<?php echo htmlspecialchars($car['make'] . ' ' . $car['model']); ?>">
+                                        <span class="card-title"><?php echo htmlspecialchars($car['make'] . ' ' . $car['model']); ?></span>
+                                    </div>
+                                    <div class="card-content">
+                                        <p><strong>Year:</strong> <?php echo htmlspecialchars($car['year']); ?></p>
+                                        <p><strong>Price:</strong> $<?php echo htmlspecialchars($car['price_per_day']); ?>/day</p>
+                                    </div>
+                                    <div class="card-action">
+                                        <a href="car.php?id=<?php echo $car['id']; ?>">View Details & Rent</a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="center-align">No cars available at the moment. Please check back later.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <footer>
-        <p>&copy; 2025 Rent-a-Car. All Rights Reserved.</p>
+    <footer class="page-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">Rent-a-Car</h5>
+                    <p class="grey-text text-lighten-4">Your adventure starts here. Quality cars for every occasion.</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                &copy; 2025 Rent-a-Car. All Rights Reserved.
+            </div>
+        </div>
     </footer>
 
-    <script src="js/script.js"></script>
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="js/custom.js"></script>
 </body>
 </html>

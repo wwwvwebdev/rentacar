@@ -59,133 +59,104 @@ if ($car) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title; ?> - Rent-a-Car</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        .car-details-container {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: #fff;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border-radius: 8px;
-        }
-        .car-image img {
-            width: 100%;
-            border-radius: 8px;
-        }
-        .car-info h2 {
-            margin-top: 0;
-        }
-        .car-info .price {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #007bff;
-            margin: 1rem 0;
-        }
-        .rental-form {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-        }
-        .rental-form .form-group {
-            margin-bottom: 1rem;
-        }
-        .rental-form label {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        .rental-form input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .rental-form button {
-            width: 100%;
-            padding: 12px;
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-    </style>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/custom.css">
 </head>
 <body>
     <header>
         <nav>
-            <a href="index.php" class="logo">Rent-a-Car</a>
-            <ul>
-                <li><a href="index.php">Home</a></li>
-                <li><a href="#">Cars</a></li>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><a href="my_bookings.php">My Bookings</a></li>
-                    <li><a href="profile.php">Profile</a></li>
-                <?php endif; ?>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
-                    <li><a href="logout.php">Logout</a></li>
-                <?php else: ?>
-                    <li><a href="login.php" class="btn-login">Login</a></li>
-                <?php endif; ?>
-            </ul>
+            <div class="nav-wrapper">
+                <a href="index.php" class="brand-logo">Rent-a-Car</a>
+                <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="#">Cars</a></li>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <li><a href="my_bookings.php">My Bookings</a></li>
+                        <li><a href="profile.php">Profile</a></li>
+                        <li><a href="logout.php" class="waves-effect waves-light btn">Logout</a></li>
+                    <?php else: ?>
+                        <li><a href="login.php" class="waves-effect waves-light btn">Login</a></li>
+                    <?php endif; ?>
+                </ul>
+            </div>
         </nav>
+        <ul class="sidenav" id="mobile-nav">
+            <li><a href="index.php">Home</a></li>
+            <li><a href="#">Cars</a></li>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <li><a href="my_bookings.php">My Bookings</a></li>
+                <li><a href="profile.php">Profile</a></li>
+                <li><a href="logout.php">Logout</a></li>
+            <?php else: ?>
+                <li><a href="login.php">Login</a></li>
+            <?php endif; ?>
+        </ul>
     </header>
 
     <main>
-        <?php if ($car): ?>
-            <div class="car-details-container">
-                <div class="car-image">
-                    <img src="<?php echo htmlspecialchars($car['image_url'] ?: 'images/placeholder.png'); ?>" alt="<?php echo htmlspecialchars($car['make'] . ' ' . $car['model']); ?>">
-                </div>
-                <div class="car-info">
-                    <h2><?php echo htmlspecialchars($car['make'] . ' ' . $car['model']); ?></h2>
-                    <p><strong>Year:</strong> <?php echo htmlspecialchars($car['year']); ?></p>
-                    <p class="price">$<?php echo htmlspecialchars($car['price_per_day']); ?> / day</p>
-
-                    <div class="rental-form">
-                        <?php if (isset($_SESSION['user_id'])): ?>
-                            <h3>Book this Car</h3>
-                            <form action="car.php?id=<?php echo $car_id; ?>" method="POST" id="bookingForm">
-                                <?php if(!empty($booking_error)): ?>
-                                    <p style="color: red;"><?php echo $booking_error; ?></p>
+        <div class="container">
+            <?php if ($car): ?>
+                <div class="section">
+                    <div class="row">
+                        <div class="col s12 m6">
+                            <img class="responsive-img materialboxed" src="<?php echo htmlspecialchars($car['image_url'] ?: 'https://via.placeholder.com/600x400.png?text=No+Image'); ?>" alt="<?php echo htmlspecialchars($car['make'] . ' ' . $car['model']); ?>">
+                        </div>
+                        <div class="col s12 m6">
+                            <h3><?php echo htmlspecialchars($car['make'] . ' ' . $car['model']); ?></h3>
+                            <h5>Year: <?php echo htmlspecialchars($car['year']); ?></h5>
+                            <h4 class="teal-text text-darken-2">$<?php echo htmlspecialchars($car['price_per_day']); ?> / day</h4>
+                            <div class="card-panel">
+                                <?php if (isset($_SESSION['user_id'])): ?>
+                                    <h5>Book this Car</h5>
+                                    <form action="car.php?id=<?php echo $car_id; ?>" method="POST" id="bookingForm">
+                                        <div class="input-field">
+                                            <input type="text" class="datepicker" id="start_date" name="start_date" required>
+                                            <label for="start_date">Start Date</label>
+                                        </div>
+                                        <div class="input-field">
+                                            <input type="text" class="datepicker" id="end_date" name="end_date" required>
+                                            <label for="end_date">End Date</label>
+                                        </div>
+                                        <button type="submit" class="btn waves-effect waves-light green right">Confirm Booking</button>
+                                    </form>
+                                <?php else: ?>
+                                    <p>Please <a href="login.php">login</a> to book this car.</p>
                                 <?php endif; ?>
-                                <div class="form-group">
-                                    <label for="start_date">Start Date</label>
-                                    <input type="date" id="start_date" name="start_date" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="end_date">End Date</label>
-                                    <input type="date" id="end_date" name="end_date" required>
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit">Confirm Booking</button>
-                                </div>
-                            </form>
-                        <?php else: ?>
-                            <p>Please <a href="login.php">login</a> to book this car.</p>
-                        <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        <?php else: ?>
-            <div style="text-align: center; padding: 4rem;">
-                <h2>Car Not Found</h2>
-                <p>Sorry, the car you are looking for does not exist.</p>
-                <a href="index.php">Back to Homepage</a>
-            </div>
-        <?php endif; ?>
+            <?php else: ?>
+                <div class="section center-align">
+                    <h2>Car Not Found</h2>
+                    <p>Sorry, the car you are looking for does not exist.</p>
+                    <a href="index.php" class="btn waves-effect waves-light">Back to Homepage</a>
+                </div>
+            <?php endif; ?>
+        </div>
     </main>
 
-    <footer>
-        <p>&copy; 2025 Rent-a-Car. All Rights Reserved.</p>
+    <footer class="page-footer">
+        <div class="footer-copyright">
+            <div class="container">
+                &copy; 2025 Rent-a-Car. All Rights Reserved.
+            </div>
+        </div>
     </footer>
+
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="js/custom.js"></script>
+    <?php
+    if (!empty($booking_error)) {
+        echo "<script>M.toast({html: '{$booking_error}', classes: 'red'});</script>";
+    }
+    ?>
 </body>
 </html>

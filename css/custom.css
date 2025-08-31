@@ -1,0 +1,47 @@
+/* Custom styles to complement or override Materialize CSS */
+
+/* Make sure the footer stays at the bottom */
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    background-color: #f4f7f6; /* A slightly softer grey */
+}
+
+main {
+    flex: 1 0 auto;
+    padding: 2rem 0; /* Add some vertical padding to the main content */
+}
+
+/* Custom Nav Bar styles */
+.nav-wrapper {
+    padding: 0 2rem; /* Add padding to the nav bar */
+}
+
+.brand-logo {
+    font-weight: 300;
+}
+
+/* Auth form card panel */
+.auth-card {
+    padding: 20px 30px !important; /* Add more padding to the form cards */
+}
+
+/* Car card adjustments */
+.card .card-image img {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Admin table action buttons */
+.admin-table-actions a {
+    margin: 0 5px;
+}
+
+/* Center the fixed action button on small screens */
+@media only screen and (max-width: 992px) {
+    .fixed-action-btn {
+        right: 24px;
+        left: auto;
+    }
+}

@@ -15,81 +15,88 @@ $cars = get_all_cars_admin($conn);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Manage Cars</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <style>
-        .admin-container { max-width: 1100px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 8px; }
-        .admin-container h1 { text-align: center; margin-bottom: 2rem; }
-        .admin-actions { margin-bottom: 1.5rem; text-align: right; }
-        .admin-actions a { background-color: #007bff; color: #fff; padding: 10px 15px; text-decoration: none; border-radius: 5px; }
-        .admin-table { width: 100%; border-collapse: collapse; }
-        .admin-table th, .admin-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        .admin-table th { background-color: #f2f2f2; }
-        .admin-table tr:nth-child(even) { background-color: #f9f9f9; }
-        .admin-table .actions a { margin-right: 10px; }
-        .status-available { color: green; font-weight: bold; }
-        .status-unavailable { color: red; font-weight: bold; }
-    </style>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/custom.css">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.php" class="logo">Rent-a-Car (Admin)</a>
-            <ul>
-                <li><a href="../index.php">View Site</a></li>
-                <li><a href="index.php">Manage Cars</a></li>
-                <li><a href="../logout.php">Logout</a></li>
-            </ul>
+            <div class="nav-wrapper">
+                <a href="index.php" class="brand-logo">Admin Panel</a>
+                <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="index.php">Manage Cars</a></li>
+                    <li><a href="../index.php">View Site</a></li>
+                    <li><a href="../logout.php" class="waves-effect waves-light btn red">Logout</a></li>
+                </ul>
+            </div>
         </nav>
+        <ul class="sidenav" id="mobile-nav">
+            <li><a href="index.php">Manage Cars</a></li>
+            <li><a href="../index.php">View Site</a></li>
+            <li><a href="../logout.php">Logout</a></li>
+        </ul>
     </header>
 
     <main>
-        <div class="admin-container">
-            <h1>Manage Cars</h1>
-            <div class="admin-actions">
-                <a href="car_form.php">Add New Car</a>
-            </div>
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Make</th>
-                        <th>Model</th>
-                        <th>Year</th>
-                        <th>Price/Day</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($cars)): ?>
-                        <?php foreach ($cars as $car): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($car['id']); ?></td>
-                                <td><?php echo htmlspecialchars($car['make']); ?></td>
-                                <td><?php echo htmlspecialchars($car['model']); ?></td>
-                                <td><?php echo htmlspecialchars($car['year']); ?></td>
-                                <td>$<?php echo htmlspecialchars(number_format($car['price_per_day'], 2)); ?></td>
-                                <td>
-                                    <?php if ($car['is_available']): ?>
-                                        <span class="status-available">Available</span>
-                                    <?php else: ?>
-                                        <span class="status-unavailable">Unavailable</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="actions">
-                                    <a href="car_form.php?id=<?php echo $car['id']; ?>">Edit</a>
-                                    <a href="delete_car.php?id=<?php echo $car['id']; ?>" onclick="return confirm('Are you sure you want to delete this car?');">Delete</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+        <div class="container">
+            <div class="section">
+                <h3>Manage Cars</h3>
+                <div class="fixed-action-btn">
+                    <a href="car_form.php" class="btn-floating btn-large waves-effect waves-light blue"><i class="material-icons">add</i></a>
+                </div>
+                <table class="striped responsive-table">
+                    <thead>
                         <tr>
-                            <td colspan="7" style="text-align:center;">No cars found.</td>
+                            <th>ID</th>
+                            <th>Make</th>
+                            <th>Model</th>
+                            <th>Year</th>
+                            <th>Price/Day</th>
+                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($cars)): ?>
+                            <?php foreach ($cars as $car): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($car['id']); ?></td>
+                                    <td><?php echo htmlspecialchars($car['make']); ?></td>
+                                    <td><?php echo htmlspecialchars($car['model']); ?></td>
+                                    <td><?php echo htmlspecialchars($car['year']); ?></td>
+                                    <td>$<?php echo htmlspecialchars(number_format($car['price_per_day'], 2)); ?></td>
+                                    <td>
+                                        <?php if ($car['is_available']): ?>
+                                            <span class="new badge green" data-badge-caption="Available"></span>
+                                        <?php else: ?>
+                                            <span class="new badge red" data-badge-caption="Unavailable"></span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <a href="car_form.php?id=<?php echo $car['id']; ?>" class="btn-small waves-effect waves-light">Edit</a>
+                                        <a href="delete_car.php?id=<?php echo $car['id']; ?>" class="btn-small waves-effect waves-light red" onclick="return confirm('Are you sure you want to delete this car?');">Delete</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="7" class="center-align">No cars found. Click the '+' button to add one.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
+
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="../js/custom.js"></script>
 </body>
 </html>

@@ -24,95 +24,92 @@ if (isset($_SESSION['booking_success'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookings - Rent-a-Car</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        .bookings-container {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 2rem;
-        }
-        .booking-card {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-            background: #fff;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .booking-card img {
-            width: 150px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        .booking-details {
-            flex-grow: 1;
-        }
-        .booking-details h3 {
-            margin-top: 0;
-            margin-bottom: 0.5rem;
-        }
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 1rem;
-            border: 1px solid #c3e6cb;
-            border-radius: 5px;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-    </style>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/custom.css">
 </head>
 <body>
     <header>
         <nav>
-            <a href="index.php" class="logo">Rent-a-Car</a>
-            <ul>
-                <li><a href="index.php">Home</a></li>
-                <li><a href="#">Cars</a></li>
-                <li><a href="my_bookings.php">My Bookings</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
-                    <li><a href="logout.php">Logout</a></li>
-                <?php else: ?>
-                    <li><a href="login.php" class="btn-login">Login</a></li>
-                <?php endif; ?>
-            </ul>
+            <div class="nav-wrapper">
+                <a href="index.php" class="brand-logo">Rent-a-Car</a>
+                <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="#">Cars</a></li>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <li class="active"><a href="my_bookings.php">My Bookings</a></li>
+                        <li><a href="profile.php">Profile</a></li>
+                        <li><a href="logout.php" class="waves-effect waves-light btn">Logout</a></li>
+                    <?php else: ?>
+                        <li><a href="login.php" class="waves-effect waves-light btn">Login</a></li>
+                    <?php endif; ?>
+                </ul>
+            </div>
         </nav>
+        <ul class="sidenav" id="mobile-nav">
+            <li><a href="index.php">Home</a></li>
+            <li><a href="#">Cars</a></li>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <li><a href="my_bookings.php">My Bookings</a></li>
+                <li><a href="profile.php">Profile</a></li>
+                <li><a href="logout.php">Logout</a></li>
+            <?php else: ?>
+                <li><a href="login.php">Login</a></li>
+            <?php endif; ?>
+        </ul>
     </header>
 
     <main>
-        <div class="bookings-container">
-            <h2>My Bookings</h2>
-
-            <?php if (!empty($booking_success_message)): ?>
-                <p class="success-message"><?php echo $booking_success_message; ?></p>
-            <?php endif; ?>
-
-            <?php if (!empty($bookings)): ?>
-                <?php foreach ($bookings as $booking): ?>
-                    <div class="booking-card">
-                        <img src="<?php echo htmlspecialchars($booking['image_url'] ?: 'images/placeholder.png'); ?>" alt="<?php echo htmlspecialchars($booking['make'] . ' ' . $booking['model']); ?>">
-                        <div class="booking-details">
-                            <h3><?php echo htmlspecialchars($booking['make'] . ' ' . $booking['model']); ?></h3>
-                            <p><strong>From:</strong> <?php echo htmlspecialchars($booking['start_date']); ?></p>
-                            <p><strong>To:</strong> <?php echo htmlspecialchars($booking['end_date']); ?></p>
-                            <p><strong>Total Price:</strong> $<?php echo htmlspecialchars(number_format($booking['total_price'], 2)); ?></p>
-                        </div>
+        <div class="container">
+            <div class="section">
+                <h3 class="center-align">My Bookings</h3>
+                <?php if (!empty($bookings)): ?>
+                    <div class="row">
+                        <?php foreach ($bookings as $booking): ?>
+                            <div class="col s12 m6">
+                                <div class="card horizontal">
+                                    <div class="card-image">
+                                        <img src="<?php echo htmlspecialchars($booking['image_url'] ?: 'https://via.placeholder.com/400x300.png?text=No+Image'); ?>">
+                                    </div>
+                                    <div class="card-stacked">
+                                        <div class="card-content">
+                                            <span class="card-title"><?php echo htmlspecialchars($booking['make'] . ' ' . $booking['model']); ?></span>
+                                            <p><strong>From:</strong> <?php echo htmlspecialchars($booking['start_date']); ?></p>
+                                            <p><strong>To:</strong> <?php echo htmlspecialchars($booking['end_date']); ?></p>
+                                            <p><strong>Total:</strong> $<?php echo htmlspecialchars(number_format($booking['total_price'], 2)); ?></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>You have no bookings yet.</p>
-            <?php endif; ?>
+                <?php else: ?>
+                    <p class="center-align">You have no bookings yet. <a href="index.php">Find a car to rent!</a></p>
+                <?php endif; ?>
+            </div>
         </div>
     </main>
 
-    <footer>
-        <p>&copy; 2025 Rent-a-Car. All Rights Reserved.</p>
+    <footer class="page-footer">
+        <div class="footer-copyright">
+            <div class="container">
+                &copy; 2025 Rent-a-Car. All Rights Reserved.
+            </div>
+        </div>
     </footer>
+
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="js/custom.js"></script>
+    <?php
+    if (!empty($booking_success_message)) {
+        echo "<script>M.toast({html: '{$booking_success_message}', classes: 'green'});</script>";
+    }
+    ?>
 </body>
 </html>
