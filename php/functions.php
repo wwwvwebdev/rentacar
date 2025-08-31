@@ -35,6 +35,46 @@ function get_all_cars($conn, $city = null) {
 }
 
 /**
+ * Fetches all bookings for the admin panel.
+ *
+ * @param mysqli $conn The database connection object.
+ * @return array An array of all booking records.
+ */
+function get_all_bookings_admin($conn) {
+    $bookings = [];
+    $sql = "SELECT
+                r.id, r.start_date, r.end_date, r.total_price, r.status,
+                c.make, c.model,
+                u.full_name, u.email
+            FROM rentals AS r
+            JOIN cars AS c ON r.car_id = c.id
+            JOIN users AS u ON r.user_id = u.id
+            ORDER BY r.created_at DESC";
+
+    $result = $conn->query($sql);
+    if ($result && $result->num_rows > 0) {
+        $bookings = $result->fetch_all(MYSQLI_ASSOC);
+    }
+    return $bookings;
+}
+
+/**
+ * Updates the status of a booking.
+ *
+ * @param mysqli $conn The database connection object.
+ * @param int $rental_id The ID of the rental to update.
+ * @param string $status The new status.
+ * @return bool True on success, false on failure.
+ */
+function update_booking_status($conn, $rental_id, $status) {
+    $sql = "UPDATE rentals SET status = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    if ($stmt === false) return false;
+    $stmt->bind_param("si", $status, $rental_id);
+    return $stmt->execute();
+}
+
+/**
  * Fetches a distinct list of cities from the cars table.
  *
  * @param mysqli $conn The database connection object.
@@ -254,6 +294,7 @@ function get_user_bookings($conn, $user_id) {
                 r.start_date,
                 r.end_date,
                 r.total_price,
+                r.status,
                 c.make,
                 c.model,
                 c.image_url

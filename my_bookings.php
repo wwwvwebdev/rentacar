@@ -81,6 +81,16 @@ if (isset($_SESSION['booking_success'])) {
                                             <p><strong>From:</strong> <?php echo htmlspecialchars($booking['start_date']); ?></p>
                                             <p><strong>To:</strong> <?php echo htmlspecialchars($booking['end_date']); ?></p>
                                             <p><strong>Total:</strong> $<?php echo htmlspecialchars(number_format($booking['total_price'], 2)); ?></p>
+                                            <div class="chip <?php
+                                                switch ($booking['status']) {
+                                                    case 'confirmed': echo 'green white-text'; break;
+                                                    case 'completed': echo 'blue white-text'; break;
+                                                    case 'cancelled': echo 'red white-text'; break;
+                                                    default: echo 'yellow darken-2 white-text'; break;
+                                                }
+                                            ?>">
+                                                <?php echo htmlspecialchars(ucfirst($booking['status'])); ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
