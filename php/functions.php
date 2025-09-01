@@ -377,4 +377,41 @@ function update_user_password($conn, $user_id, $current_password, $new_password)
         return false;
     }
 }
+
+/**
+ * Retrieves a setting value from the database.
+ *
+ * @param mysqli $conn The database connection object.
+ * @param string $setting_name The name of the setting to retrieve.
+ * @return string|null The value of the setting, or null if not found.
+ */
+function get_setting($conn, $setting_name) {
+    $sql = "SELECT setting_value FROM settings WHERE setting_name = ?";
+    $stmt = $conn->prepare($sql);
+    if ($stmt === false) return null;
+    $stmt->bind_param("s", $setting_name);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows === 1) {
+        $row = $result->fetch_assoc();
+        return $row['setting_value'];
+    }
+    return null;
+}
+
+/**
+ * Updates a setting value in the database.
+ *
+ * @param mysqli $conn The database connection object.
+ * @param string $setting_name The name of the setting to update.
+ * @param string $setting_value The new value for the setting.
+ * @return bool True on success, false on failure.
+ */
+function update_setting($conn, $setting_name, $setting_value) {
+    $sql = "UPDATE settings SET setting_value = ? WHERE setting_name = ?";
+    $stmt = $conn->prepare($sql);
+    if ($stmt === false) return false;
+    $stmt->bind_param("ss", $setting_value, $setting_name);
+    return $stmt->execute();
+}
 ?>

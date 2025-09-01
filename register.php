@@ -9,6 +9,7 @@ if (isset($_SESSION['user_id'])) {
 
 require_once 'php/functions.php';
 
+$whatsapp_number = get_setting($conn, 'whatsapp_number');
 $registration_error = '';
 
 // Handle form submission
@@ -111,6 +112,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </main>
+
+    <?php if ($whatsapp_number): ?>
+    <div class="fixed-action-btn">
+        <a href="https://wa.me/<?php echo htmlspecialchars($whatsapp_number); ?>" target="_blank" class="btn-floating btn-large green">
+            <i class="large material-icons">message</i>
+        </a>
+    </div>
+    <?php endif; ?>
 
     <footer class="page-footer">
         <div class="footer-copyright">

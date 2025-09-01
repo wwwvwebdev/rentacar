@@ -7,6 +7,7 @@ require_once 'php/functions.php';
 $cities = get_all_cities($conn);
 $selected_city = $_GET['city'] ?? 'all';
 $cars = get_all_cars($conn, $selected_city);
+$whatsapp_number = get_setting($conn, 'whatsapp_number');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -109,6 +110,14 @@ $cars = get_all_cars($conn, $selected_city);
             </div>
         </div>
     </main>
+
+    <?php if ($whatsapp_number): ?>
+    <div class="fixed-action-btn">
+        <a href="https://wa.me/<?php echo htmlspecialchars($whatsapp_number); ?>" target="_blank" class="btn-floating btn-large green">
+            <i class="large material-icons">message</i>
+        </a>
+    </div>
+    <?php endif; ?>
 
     <footer class="page-footer">
         <div class="container">

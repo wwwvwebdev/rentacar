@@ -90,6 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <ul class="right hide-on-med-and-down">
                     <li><a href="index.php">Manage Cars</a></li>
                     <li><a href="manage_bookings.php">Manage Bookings</a></li>
+                    <li><a href="settings.php">Settings</a></li>
                     <li><a href="../index.php">View Site</a></li>
                     <li><a href="../logout.php" class="waves-effect waves-light btn red">Logout</a></li>
                 </ul>
@@ -98,6 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <ul class="sidenav" id="mobile-nav">
             <li><a href="index.php">Manage Cars</a></li>
             <li><a href="manage_bookings.php">Manage Bookings</a></li>
+            <li><a href="settings.php">Settings</a></li>
             <li><a href="../index.php">View Site</a></li>
             <li><a href="../logout.php">Logout</a></li>
         </ul>

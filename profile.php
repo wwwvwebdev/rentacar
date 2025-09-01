@@ -2,6 +2,8 @@
 session_start();
 require_once 'php/functions.php';
 
+$whatsapp_number = get_setting($conn, 'whatsapp_number');
+
 // If user is not logged in, redirect to login page
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -156,6 +158,14 @@ $user = $result->fetch_assoc();
             </div>
         </div>
     </main>
+
+    <?php if ($whatsapp_number): ?>
+    <div class="fixed-action-btn">
+        <a href="https://wa.me/<?php echo htmlspecialchars($whatsapp_number); ?>" target="_blank" class="btn-floating btn-large green">
+            <i class="large material-icons">message</i>
+        </a>
+    </div>
+    <?php endif; ?>
 
     <footer class="page-footer">
         <div class="footer-copyright">
