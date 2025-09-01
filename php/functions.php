@@ -35,6 +35,49 @@ function get_all_cars($conn, $city = null) {
 }
 
 /**
+ * Updates a user's document paths in the database.
+ *
+ * @param mysqli $conn The database connection object.
+ * @param int $user_id The ID of the user to update.
+ * @param string|null $cnic_path The path to the CNIC image.
+ * @param string|null $license_path The path to the license image.
+ * @return bool True on success, false on failure.
+ */
+function update_user_documents($conn, $user_id, $cnic_path, $license_path) {
+    // Build the query dynamically based on which files were uploaded
+    $sql = "UPDATE users SET ";
+    $params = [];
+    $types = "";
+
+    if ($cnic_path) {
+        $sql .= "cnic_image_path = ?";
+        $params[] = $cnic_path;
+        $types .= "s";
+    }
+    if ($license_path) {
+        if ($cnic_path) $sql .= ", ";
+        $sql .= "license_image_path = ?";
+        $params[] = $license_path;
+        $types .= "s";
+    }
+
+    // Also reset verification status when new documents are uploaded
+    if ($cnic_path || $license_path) {
+        $sql .= ", is_verified = 0";
+    }
+
+    $sql .= " WHERE id = ?";
+    $params[] = $user_id;
+    $types .= "i";
+
+    $stmt = $conn->prepare($sql);
+    if ($stmt === false) return false;
+
+    $stmt->bind_param($types, ...$params);
+    return $stmt->execute();
+}
+
+/**
  * Fetches all bookings for the admin panel.
  *
  * @param mysqli $conn The database connection object.
@@ -412,6 +455,39 @@ function update_setting($conn, $setting_name, $setting_value) {
     $stmt = $conn->prepare($sql);
     if ($stmt === false) return false;
     $stmt->bind_param("ss", $setting_value, $setting_name);
+    return $stmt->execute();
+}
+
+/**
+ * Fetches all users who have uploaded documents but are not yet verified.
+ *
+ * @param mysqli $conn The database connection object.
+ * @return array An array of user records.
+ */
+function get_unverified_users($conn) {
+    $users = [];
+    $sql = "SELECT id, full_name, username, email, cnic_image_path, license_image_path
+            FROM users
+            WHERE (cnic_image_path IS NOT NULL OR license_image_path IS NOT NULL) AND is_verified = FALSE";
+    $result = $conn->query($sql);
+    if ($result && $result->num_rows > 0) {
+        $users = $result->fetch_all(MYSQLI_ASSOC);
+    }
+    return $users;
+}
+
+/**
+ * Marks a user as verified.
+ *
+ * @param mysqli $conn The database connection object.
+ * @param int $user_id The ID of the user to verify.
+ * @return bool True on success, false on failure.
+ */
+function verify_user($conn, $user_id) {
+    $sql = "UPDATE users SET is_verified = TRUE WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    if ($stmt === false) return false;
+    $stmt->bind_param("i", $user_id);
     return $stmt->execute();
 }
 ?>

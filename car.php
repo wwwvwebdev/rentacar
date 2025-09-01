@@ -119,29 +119,35 @@ if ($car) {
                             <h4 class="teal-text text-darken-2" id="price-display">$<?php echo htmlspecialchars($car['price_per_day']); ?> / day</h4>
                             <div class="card-panel">
                                 <?php if (isset($_SESSION['user_id'])): ?>
-                                    <h5>Book this Car</h5>
-                                    <form action="car.php?id=<?php echo $car_id; ?>" method="POST" id="bookingForm"
-                                          data-car-price="<?php echo $car['price_per_day']; ?>"
-                                          data-driver-price="<?php echo $car['driver_rate_per_day']; ?>">
-                                        <div class="input-field">
-                                            <input type="text" class="datepicker" id="start_date" name="start_date" required>
-                                            <label for="start_date">Start Date</label>
-                                        </div>
-                                        <div class="input-field">
-                                            <input type="text" class="datepicker" id="end_date" name="end_date" required>
-                                            <label for="end_date">End Date</label>
-                                        </div>
-                                        <?php if ($car['with_driver_available']): ?>
-                                        <p>
-                                            <label>
-                                                <input type="checkbox" name="with_driver" id="with_driver" value="1" />
-                                                <span>Include Driver (+ $<?php echo htmlspecialchars($car['driver_rate_per_day']); ?>/day)</span>
-                                            </label>
-                                        </p>
-                                        <?php endif; ?>
-                                        <h5 class="right-align" id="total-price-display">Total: $0.00</h5>
-                                        <button type="submit" class="btn waves-effect waves-light green right">Confirm Booking</button>
-                                    </form>
+                                    <?php if ($_SESSION['is_verified']): ?>
+                                        <h5>Book this Car</h5>
+                                        <form action="car.php?id=<?php echo $car_id; ?>" method="POST" id="bookingForm"
+                                              data-car-price="<?php echo $car['price_per_day']; ?>"
+                                              data-driver-price="<?php echo $car['driver_rate_per_day']; ?>">
+                                            <div class="input-field">
+                                                <input type="text" class="datepicker" id="start_date" name="start_date" required>
+                                                <label for="start_date">Start Date</label>
+                                            </div>
+                                            <div class="input-field">
+                                                <input type="text" class="datepicker" id="end_date" name="end_date" required>
+                                                <label for="end_date">End Date</label>
+                                            </div>
+                                            <?php if ($car['with_driver_available']): ?>
+                                            <p>
+                                                <label>
+                                                    <input type="checkbox" name="with_driver" id="with_driver" value="1" />
+                                                    <span>Include Driver (+ $<?php echo htmlspecialchars($car['driver_rate_per_day']); ?>/day)</span>
+                                                </label>
+                                            </p>
+                                            <?php endif; ?>
+                                            <h5 class="right-align" id="total-price-display">Total: $0.00</h5>
+                                            <button type="submit" class="btn waves-effect waves-light green right">Confirm Booking</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <h5>Verification Required</h5>
+                                        <p>You must be a verified user to book a car. Please go to your <a href="profile.php">profile page</a> to upload your documents.</p>
+                                        <p>Once uploaded, an admin will review your documents for approval.</p>
+                                    <?php endif; ?>
                                 <?php else: ?>
                                     <p>Please <a href="login.php">login</a> to book this car.</p>
                                 <?php endif; ?>

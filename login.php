@@ -34,6 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['username'] = $user['username'];
             $_SESSION['full_name'] = $user['full_name'];
             $_SESSION['is_admin'] = $user['is_admin'];
+            $_SESSION['is_verified'] = $user['is_verified'];
 
             // Redirect to the homepage
             header("Location: index.php");

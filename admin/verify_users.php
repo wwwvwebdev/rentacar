@@ -7,14 +7,24 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || !$_SESSION[
 }
 
 require_once '../php/functions.php';
-$cars = get_all_cars_admin($conn);
+
+// Handle verification submission
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['verify_user'])) {
+    $user_to_verify = (int)$_POST['user_id'];
+    verify_user($conn, $user_to_verify);
+    // Redirect to the same page to see the updated list
+    header("Location: verify_users.php");
+    exit;
+}
+
+$unverified_users = get_unverified_users($conn);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Manage Cars</title>
+    <title>Admin Panel - Verify Users</title>
     <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <!-- Material Icons -->
@@ -29,9 +39,9 @@ $cars = get_all_cars_admin($conn);
                 <a href="index.php" class="brand-logo">Admin Panel</a>
                 <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                 <ul class="right hide-on-med-and-down">
-                    <li class="active"><a href="index.php">Manage Cars</a></li>
+                    <li><a href="index.php">Manage Cars</a></li>
                     <li><a href="manage_bookings.php">Manage Bookings</a></li>
-                    <li><a href="verify_users.php">Verify Users</a></li>
+                    <li class="active"><a href="verify_users.php">Verify Users</a></li>
                     <li><a href="settings.php">Settings</a></li>
                     <li><a href="../index.php">View Site</a></li>
                     <li><a href="../logout.php" class="waves-effect waves-light btn red">Logout</a></li>
@@ -51,49 +61,44 @@ $cars = get_all_cars_admin($conn);
     <main>
         <div class="container">
             <div class="section">
-                <h3>Manage Cars</h3>
-                <div class="fixed-action-btn">
-                    <a href="car_form.php" class="btn-floating btn-large waves-effect waves-light blue"><i class="material-icons">add</i></a>
-                </div>
+                <h3>Verify User Documents</h3>
                 <table class="striped responsive-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Make</th>
-                            <th>Model</th>
-                            <th>City</th>
-                            <th>Year</th>
-                            <th>Price/Day</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>User ID</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Documents</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($cars)): ?>
-                            <?php foreach ($cars as $car): ?>
+                        <?php if (!empty($unverified_users)): ?>
+                            <?php foreach ($unverified_users as $user): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($car['id']); ?></td>
-                                    <td><?php echo htmlspecialchars($car['make']); ?></td>
-                                    <td><?php echo htmlspecialchars($car['model']); ?></td>
-                                    <td><?php echo htmlspecialchars($car['city']); ?></td>
-                                    <td><?php echo htmlspecialchars($car['year']); ?></td>
-                                    <td>$<?php echo htmlspecialchars(number_format($car['price_per_day'], 2)); ?></td>
+                                    <td><?php echo htmlspecialchars($user['id']); ?></td>
+                                    <td><?php echo htmlspecialchars($user['full_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($user['email']); ?></td>
                                     <td>
-                                        <?php if ($car['is_available']): ?>
-                                            <span class="new badge green" data-badge-caption="Available"></span>
-                                        <?php else: ?>
-                                            <span class="new badge red" data-badge-caption="Unavailable"></span>
+                                        <?php if ($user['cnic_image_path']): ?>
+                                            <a href="../<?php echo htmlspecialchars($user['cnic_image_path']); ?>" target="_blank">View CNIC</a>
+                                        <?php endif; ?>
+                                        <br>
+                                        <?php if ($user['license_image_path']): ?>
+                                            <a href="../<?php echo htmlspecialchars($user['license_image_path']); ?>" target="_blank">View License</a>
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <a href="car_form.php?id=<?php echo $car['id']; ?>" class="btn-small waves-effect waves-light">Edit</a>
-                                        <a href="delete_car.php?id=<?php echo $car['id']; ?>" class="btn-small waves-effect waves-light red" onclick="return confirm('Are you sure you want to delete this car?');">Delete</a>
+                                        <form action="verify_users.php" method="POST">
+                                            <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                                            <button type="submit" name="verify_user" class="btn waves-effect waves-light green">Verify</button>
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="8" class="center-align">No cars found. Click the '+' button to add one.</td>
+                                <td colspan="5" class="center-align">No users are currently awaiting verification.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

@@ -13,6 +13,45 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $profile_message = '';
 $password_message = '';
+$document_message = '';
+
+// Handle document upload
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['upload_documents'])) {
+    $upload_dir = 'uploads/documents/';
+    $cnic_path = null;
+    $license_path = null;
+    $error = false;
+
+    // Helper function for uploading a file
+    function upload_file($file_key, $user_id) {
+        global $upload_dir;
+        if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] == 0) {
+            $allowed_types = ['image/jpeg', 'image/png', 'application/pdf'];
+            if (in_array($_FILES[$file_key]['type'], $allowed_types) && $_FILES[$file_key]['size'] < 2000000) { // 2MB limit
+                $file_ext = pathinfo($_FILES[$file_key]['name'], PATHINFO_EXTENSION);
+                $file_name = "user_{$user_id}_{$file_key}_" . time() . "." . $file_ext;
+                $target_path = $upload_dir . $file_name;
+                if (move_uploaded_file($_FILES[$file_key]['tmp_name'], $target_path)) {
+                    return $target_path;
+                }
+            }
+        }
+        return null;
+    }
+
+    $cnic_path = upload_file('cnic_image', $user_id);
+    $license_path = upload_file('license_image', $user_id);
+
+    if ($cnic_path || $license_path) {
+        if (update_user_documents($conn, $user_id, $cnic_path, $license_path)) {
+            $document_message = "Documents uploaded successfully. Please wait for verification.";
+        } else {
+            $document_message = "Error saving document information.";
+        }
+    } else {
+        $document_message = "No valid files were uploaded. Please check file type and size.";
+    }
+}
 
 // Handle profile update form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
@@ -56,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['change_password'])) {
 }
 
 // Get current user data to pre-fill form
-$sql = "SELECT full_name, username, email FROM users WHERE id = ?";
+$sql = "SELECT full_name, username, email, cnic_image_path, license_image_path, is_verified FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -151,6 +190,54 @@ $user = $result->fetch_assoc();
                                     <label for="confirm_password">Confirm New Password</label>
                                 </div>
                                 <button type="submit" name="change_password" class="btn waves-effect waves-light">Change Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <div class="card-panel">
+                            <h5>Verification Documents</h5>
+                            <?php if ($user['is_verified']): ?>
+                                <p class="green-text">Your account is verified.</p>
+                            <?php else: ?>
+                                <p class="yellow-text text-darken-2">Your account is not verified. Please upload documents to rent a car.</p>
+                            <?php endif; ?>
+
+                            <?php if (!empty($document_message)): ?>
+                                <div class="message <?php echo strpos($document_message, 'success') !== false ? 'green-text' : 'red-text'; ?>">
+                                    <?php echo $document_message; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <form action="profile.php" method="POST" enctype="multipart/form-data">
+                                <div class="file-field input-field">
+                                    <div class="btn">
+                                        <span>CNIC Image</span>
+                                        <input type="file" name="cnic_image">
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text" placeholder="Upload your CNIC">
+                                    </div>
+                                </div>
+                                <?php if ($user['cnic_image_path']): ?>
+                                    <p>Current CNIC: <a href="<?php echo htmlspecialchars($user['cnic_image_path']); ?>" target="_blank">View</a></p>
+                                <?php endif; ?>
+
+                                <div class="file-field input-field">
+                                    <div class="btn">
+                                        <span>License Image</span>
+                                        <input type="file" name="license_image">
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text" placeholder="Upload your driver's license">
+                                    </div>
+                                </div>
+                                <?php if ($user['license_image_path']): ?>
+                                     <p>Current License: <a href="<?php echo htmlspecialchars($user['license_image_path']); ?>" target="_blank">View</a></p>
+                                <?php endif; ?>
+
+                                <button type="submit" name="upload_documents" class="btn waves-effect waves-light blue" style="margin-top: 1rem;">Upload Documents</button>
                             </form>
                         </div>
                     </div>
