@@ -12,21 +12,35 @@ $update_message = '';
 $setting_name = 'whatsapp_number';
 
 // Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_settings'])) {
-    $new_number = trim($_POST['whatsapp_number']);
-    if (!empty($new_number)) {
-        if (update_setting($conn, $setting_name, $new_number)) {
-            $update_message = "Settings updated successfully!";
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['update_contact_settings'])) {
+        $new_number = trim($_POST['whatsapp_number']);
+        if (!empty($new_number)) {
+            if (update_setting($conn, 'whatsapp_number', $new_number)) {
+                $update_message = "Contact settings updated successfully!";
+            } else {
+                $update_message = "Failed to update contact settings.";
+            }
         } else {
-            $update_message = "Failed to update settings.";
+            $update_message = "WhatsApp number cannot be empty.";
         }
-    } else {
-        $update_message = "WhatsApp number cannot be empty.";
+    }
+
+    if (isset($_POST['update_bank_settings'])) {
+        update_setting($conn, 'bank_name', trim($_POST['bank_name']));
+        update_setting($conn, 'bank_account_title', trim($_POST['bank_account_title']));
+        update_setting($conn, 'bank_account_number', trim($_POST['bank_account_number']));
+        update_setting($conn, 'bank_iban', trim($_POST['bank_iban']));
+        $update_message = "Bank details updated successfully!";
     }
 }
 
-// Get current setting value
-$whatsapp_number = get_setting($conn, $setting_name);
+// Get current setting values
+$whatsapp_number = get_setting($conn, 'whatsapp_number');
+$bank_name = get_setting($conn, 'bank_name');
+$bank_account_title = get_setting($conn, 'bank_account_title');
+$bank_account_number = get_setting($conn, 'bank_account_number');
+$bank_iban = get_setting($conn, 'bank_iban');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -81,7 +95,32 @@ $whatsapp_number = get_setting($conn, $setting_name);
                             <span class="helper-text">Include country code, e.g., 923001234567</span>
                         </div>
                         <div class="center-align" style="margin-top: 2rem;">
-                            <button type="submit" name="update_settings" class="btn waves-effect waves-light">Save Settings</button>
+                            <button type="submit" name="update_contact_settings" class="btn waves-effect waves-light">Save Contact Info</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-panel">
+                    <form action="settings.php" method="POST">
+                        <h5>Bank Transfer Details</h5>
+                        <div class="input-field">
+                            <input id="bank_name" type="text" name="bank_name" value="<?php echo htmlspecialchars($bank_name); ?>">
+                            <label for="bank_name">Bank Name</label>
+                        </div>
+                        <div class="input-field">
+                            <input id="bank_account_title" type="text" name="bank_account_title" value="<?php echo htmlspecialchars($bank_account_title); ?>">
+                            <label for="bank_account_title">Account Title</label>
+                        </div>
+                        <div class="input-field">
+                            <input id="bank_account_number" type="text" name="bank_account_number" value="<?php echo htmlspecialchars($bank_account_number); ?>">
+                            <label for="bank_account_number">Account Number</label>
+                        </div>
+                        <div class="input-field">
+                            <input id="bank_iban" type="text" name="bank_iban" value="<?php echo htmlspecialchars($bank_iban); ?>">
+                            <label for="bank_iban">IBAN</label>
+                        </div>
+                        <div class="center-align" style="margin-top: 2rem;">
+                            <button type="submit" name="update_bank_settings" class="btn waves-effect waves-light">Save Bank Details</button>
                         </div>
                     </form>
                 </div>

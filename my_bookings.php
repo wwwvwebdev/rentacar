@@ -13,6 +13,23 @@ if (!isset($_SESSION['user_id'])) {
 // Fetch all bookings for the current user
 $bookings = get_user_bookings($conn, $_SESSION['user_id']);
 
+// Check for pending bookings to decide if we show payment info
+$has_pending_bookings = false;
+foreach ($bookings as $booking) {
+    if ($booking['status'] === 'pending') {
+        $has_pending_bookings = true;
+        break;
+    }
+}
+
+// Get bank details if needed
+if ($has_pending_bookings) {
+    $bank_name = get_setting($conn, 'bank_name');
+    $bank_account_title = get_setting($conn, 'bank_account_title');
+    $bank_account_number = get_setting($conn, 'bank_account_number');
+    $bank_iban = get_setting($conn, 'bank_iban');
+}
+
 // Check for a booking success message
 $booking_success_message = '';
 if (isset($_SESSION['booking_success'])) {
@@ -69,6 +86,21 @@ if (isset($_SESSION['booking_success'])) {
         <div class="container">
             <div class="section">
                 <h3 class="center-align">My Bookings</h3>
+
+                <?php if ($has_pending_bookings && !empty($bank_name)): ?>
+                <div class="card-panel teal lighten-5">
+                    <h5 class="teal-text text-darken-4">Payment Information</h5>
+                    <p>To confirm your pending booking(s), please transfer the total amount to the following bank account:</p>
+                    <ul>
+                        <li><strong>Bank Name:</strong> <?php echo htmlspecialchars($bank_name); ?></li>
+                        <li><strong>Account Title:</strong> <?php echo htmlspecialchars($bank_account_title); ?></li>
+                        <li><strong>Account Number:</strong> <?php echo htmlspecialchars($bank_account_number); ?></li>
+                        <li><strong>IBAN:</strong> <?php echo htmlspecialchars($bank_iban); ?></li>
+                    </ul>
+                    <p>After making the payment, please contact us via WhatsApp with your booking details and payment proof so we can confirm your booking.</p>
+                </div>
+                <?php endif; ?>
+
                 <?php if (!empty($bookings)): ?>
                     <div class="row">
                         <?php foreach ($bookings as $booking): ?>
